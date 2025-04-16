@@ -5,7 +5,7 @@
  - .NET Standard 2.1
 
 # Installation
- 1. Download UnityPackage from the [Releases](https://github.com/w0lfv/releases).
+ 1. Download UnityPackage from the [Releases](https://github.com/w0lfv/SoopChatNet/releases).
  2. Import the Unitypackage into your Unity project.
 
 # API
