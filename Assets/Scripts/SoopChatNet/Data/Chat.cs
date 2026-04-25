@@ -1,38 +1,52 @@
+using System;
+
 namespace SoopChatNet.Data
 {
-    public class Chat
+    public sealed class Chat : ConcurrentPool<Chat>, IPoolable
     {
         public string sender;
         public string nickname;
+        public int permission;
         public string message;
         public int lang;
         public int subMonth;
         public UserStatusFlag1 flag1;
         public UserStatusFlag2 flag2;
 
-        public Chat(string[] packet)
+        public override void Parse(ReadOnlySpan<char> span)
         {
-            message = packet[0].Replace("\r", "");
-            sender = packet[1];
+            int start = 1;
+            message = Next(span, ref start).ToString();
+            sender = Next(span, ref start).ToString();
+            Next(span, ref start); // skip
+            permission = int.Parse(Next(span, ref start));
+            lang = int.Parse(Next(span, ref start));
+            nickname = Next(span, ref start).ToString();
 
-            int permission = int.Parse(packet[3]);
-            lang = int.Parse(packet[4]);
-            nickname = packet[5];
-            string flagStr = packet[6];
-            subMonth = packet[7] == "-1" ? 0 : int.Parse(packet[7]);
-            //Packet[8] = Color
+            if (permission == 0 || permission == 3)
+            {
+                ReadOnlySpan<char> flags = Next(span, ref start);
+                int sep = flags.IndexOf('|');
+                if (sep < 0)
+                {
+                    flag1 = UserStatusFlag1.NONE;
+                    flag2 = UserStatusFlag2.NONE;
+                }
+                else
+                {
+                    flag1 = (UserStatusFlag1)long.Parse(flags[..sep]);
+                    flag2 = (UserStatusFlag2)long.Parse(flags[(sep + 1)..]);
+                }
+            }
+        }
 
-            if (permission == 3 || permission == 0)
-            {
-                string[] flags = flagStr.Split('|');
-                flag1 = (UserStatusFlag1)long.Parse(flags[0]);
-                flag2 = (UserStatusFlag2)long.Parse(flags[1]);
-            }
-            else
-            {
-                flag1 = UserStatusFlag1.NONE;
-                flag2 = UserStatusFlag2.NONE;
-            }
+        public override void Reset()
+        {
+            sender = nickname = message = null;
+            permission = 0;
+            lang = subMonth = 0;
+            flag1 = UserStatusFlag1.NONE;
+            flag2 = UserStatusFlag2.NONE;
         }
     }
 }

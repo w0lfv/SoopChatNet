@@ -1,6 +1,7 @@
 using UnityEngine;
 using SoopChatNet;
 using SoopChatNet.Data;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -12,7 +13,7 @@ public class Example : MonoBehaviour
 
     private void OnDestroy()
     {
-        soopChat.Dispose();
+        soopChat?.Dispose();
     }
 
     public void StartChat()
@@ -21,6 +22,7 @@ public class Example : MonoBehaviour
             soopChat.Dispose();
         soopChat = new SoopChat(bjid);
         soopChat.OnMessageReceived += OnChat;
+        soopChat.OnBalloonReceived += OnBallon;
         soopChat.OnSocketOpened += OnOpen;
         soopChat.OnSocketError += OnError;
         soopChat.OnSocketClosed += (message) => Debug.Log(message);
@@ -31,6 +33,7 @@ public class Example : MonoBehaviour
     {
         _ = soopChat.CloseAsync();
     }
+
 
     void Update()
     {
@@ -52,6 +55,18 @@ public class Example : MonoBehaviour
     {
         Debug.Log($"{chat.nickname}({chat.sender}) : {chat.message}");
     }
+    void OnBallon(Ballon ballon)
+    {
+        Debug.Log($"{ballon.nickname}({ballon.sender}) : 별풍선 {ballon.amount}개 / {ballon.message}");
+    }
+
+#if UNITY_EDITOR
+    void OnEditorUpdate()
+    {
+        if(soopChat != null && soopChat.IsConnected)
+            soopChat.Update();
+    }
+#endif
 }
 
 #if UNITY_EDITOR

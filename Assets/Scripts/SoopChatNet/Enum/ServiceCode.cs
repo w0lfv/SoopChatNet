@@ -1,6 +1,6 @@
 namespace SoopChatNet
 {
-    enum ServiceCode: byte
+    enum ServiceCode
     {
         SVC_KEEPALIVE = 0,
         SVC_LOGIN = 1,
