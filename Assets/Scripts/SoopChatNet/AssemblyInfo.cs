@@ -4,4 +4,4 @@ using System.Reflection;
 [assembly: AssemblyDescription("Sooplive(KR) Chat API Lightweight C# Wrapper")]
 [assembly: AssemblyProduct("SoopChatNet")]
 
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.1.0")]
